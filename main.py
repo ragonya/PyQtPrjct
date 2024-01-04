@@ -17,6 +17,8 @@ class Generate_password(QWidget):
         self.pool = 'qwertyuiopasdfghjklzxcvbnm'
         self.password = ''
         self.pswrd = ''
+        self.tt = ''
+        self.last = 0
         #
 
         self.LineEdit = QLineEdit(self)
@@ -25,12 +27,12 @@ class Generate_password(QWidget):
         #
 
         self.LineEdit_2 = QLineEdit(self)
-        self.LineEdit_2.setGeometry(10, 200, 371, 51)
+        self.LineEdit_2.setGeometry(10, 160, 371, 121)
         #
 
         self.LineEdit_3 = QLineEdit(self)
         self.LineEdit_3.setGeometry(210, 40, 171, 22)
-        self.LineEdit_3.hide()
+        self.LineEdit_3.setText('1')
         #
 
         self.label = QLabel(self)
@@ -39,14 +41,8 @@ class Generate_password(QWidget):
         #
 
         self.label_2 = QLabel(self)
-        self.label_2.setGeometry(10, 260, 371, 20)
-        self.label_2.setText('                                                 Your Password')
-        #
-
-        self.label_3 = QLabel(self)
-        self.label_3.setGeometry(210, 20, 121, 21)
-        self.label_3.setText('Save as')
-        self.label_3.hide()
+        self.label_2.setGeometry(210, 20, 121, 21)
+        self.label_2.setText('Quantity')
         #
 
         self.checkBox = QCheckBox(self)
@@ -68,63 +64,99 @@ class Generate_password(QWidget):
         #
 
         self.pushButton = QPushButton(self)
-        self.pushButton.setGeometry(10, 120, 371, 71)
-        self.pushButton.setText('Generate password')
+        self.pushButton.setGeometry(130, 120, 131, 31)
+        self.pushButton.setText('Generate')
         self.pushButton.clicked.connect(self.gnrt)
         #
 
         self.pushButton_2 = QPushButton(self)
-        self.pushButton_2.setGeometry(10, 260, 111, 24)
-        self.pushButton_2.setText('Show Password')
+        self.pushButton_2.setGeometry(10, 120, 111, 24)
+        self.pushButton_2.setText('Show')
         self.pushButton_2.clicked.connect(self.show_password)
         #
 
         self.pushButton_3 = QPushButton(self)
-        self.pushButton_3.setGeometry(270, 260, 111, 24)
-        self.pushButton_3.setText('Hide Password')
+        self.pushButton_3.setGeometry(270, 120, 111, 24)
+        self.pushButton_3.setText('Hide')
         self.pushButton_3.clicked.connect(self.hide_password)
         #
 
         self.textEdit = QTextEdit(self)
-        self.textEdit.setGeometry(10, 200, 371, 51)
+        self.textEdit.setGeometry(10, 160, 371, 121)
         self.textEdit.setReadOnly(True)
-        self.textEdit.setText('Click Show Password to see it.')
+        self.textEdit.setText('')
         self.textEdit.hide()
         #
 
     def gnrt(self):
+
+        with open('data.txt', 'r', encoding='utf-8') as file:
+            data = file.read()
+            if len(data) <= 1:
+                self.last = 1
+            else:
+                self.last = len(data.split('\n'))
+
         count = 1
-        listik = []
+        pool = []
         if '1' in self.combo:
             count += 1
-            listik.append(self.digits)
+            pool.append(self.digits)
 
         if '2' in self.combo:
             count += 1
-            listik.append(self.capitals)
+            pool.append(self.capitals)
 
         if '3' in self.combo:
             count += 1
-            listik.append(self.special_symbols)
+            pool.append(self.special_symbols)
 
         number = int(self.LineEdit.text())
-        number2 = random.randint(1, number // count)
+        if number < 4:
+            self.Plan_B = self.pool + ''.join(pool)
+            self.toText = ''
+            self.toDate = ''
 
-        for i in listik:
-            self.pswrd += ''.join(random.choices(i, k=number2))
+            for i in range(1, int(self.LineEdit_3.text()) + 1):
+                self.pswrd += ''.join(random.choices(self.Plan_B, k=number))
 
-        number3 = number - len(self.pswrd)
+                self.password = ''
+                for j in self.pswrd:
+                    self.password += j
 
-        if len(self.pswrd) < number:
-            self.pswrd += ''.join(random.choices(self.pool, k=number3))
+                self.toText += str(i) + ' - ' + self.password + '\n'
+                self.toDate += str(self.last) + ' - ' + self.password + '\n'
+                self.pswrd = ''
+                self.last += 1
+            self.textEdit.show()
+            with open('data.txt', 'a', encoding='utf-8') as file:
+                file.write(self.toDate)
+            self.textEdit.setText('Click "Show" to see.')
+        else:
+            self.toText = ''
+            self.toDate = ''
 
-        self.pswrd = ''.join(list(set([i for i in self.pswrd])))
+            for i in range(1, int(self.LineEdit_3.text()) + 1):
+                for j in pool:
+                    self.pswrd += ''.join(random.choices(j, k=(random.randint(1, number // count))))
 
-        self.password = ''
-        for i in self.pswrd:
-            self.password += i
-        self.textEdit.show()
-        self.pswrd = ''
+                number3 = number - len(self.pswrd)
+
+                if len(self.pswrd) < number:
+                    self.pswrd += ''.join(random.choices(self.pool, k=number3))
+
+                random.shuffle([i for i in self.pswrd])
+                self.password = ''
+                for j in self.pswrd:
+                    self.password += j
+                self.toText += str(i) + ' - ' +  self.password + '\n'
+                self.toDate += str(self.last) + ' - ' + self.password + '\n'
+                self.pswrd = ''
+                self.last += 1
+            self.textEdit.show()
+            with open('data.txt', 'a', encoding='utf-8') as file:
+                file.write(self.toDate)
+            self.textEdit.setText('Click "Show" to see.')
 
     def combo_add_digits(self):
         self.combo.append('1')
@@ -136,10 +168,10 @@ class Generate_password(QWidget):
         self.combo.append('3')
 
     def show_password(self):
-        self.textEdit.setText(self.password)
+        self.textEdit.setText(self.toText)
 
     def hide_password(self):
-        self.textEdit.setText('Click Show Password to see it.')
+        self.textEdit.setText('Click "Show" to see.')
 
 
 class password_manager(QWidget):
@@ -148,7 +180,7 @@ class password_manager(QWidget):
 
         with open('data.txt', 'r') as file:
             data = file.read().split('\n')
-            data = data[:-1]
+            data = data[1:]
 
         super().__init__()
 
@@ -175,27 +207,38 @@ class password_manager(QWidget):
         #
 
         self.add_button = QPushButton(self)
-        self.add_button.setGeometry(310, 90, 81, 41)
+        self.add_button.setGeometry(310, 80, 81, 41)
         self.add_button.setText('Add')
         self.add_button.clicked.connect(self.add_password)
         #
 
         self.del_button = QPushButton(self)
-        self.del_button.setGeometry(310, 150, 81, 41)
+        self.del_button.setGeometry(310, 130, 81, 41)
         self.del_button.setText('Delete')
         self.del_button.clicked.connect(self.delete_password)
         #
 
         self.clear_button = QPushButton(self)
-        self.clear_button.setGeometry(310, 210, 81, 41)
+        self.clear_button.setGeometry(310, 180, 81, 41)
         self.clear_button.setText('Clear')
         self.clear_button.clicked.connect(self.clear_passwords)
         #
 
+        self.refresh_button = QPushButton(self)
+        self.refresh_button.setGeometry(310, 230, 81, 41)
+        self.refresh_button.setText('Refresh')
+        self.refresh_button.clicked.connect(self.refresh)
+
         self.List_widget = QListWidget(self)
-        self.List_widget.setGeometry(10, 80, 291, 181)
+        self.List_widget.setGeometry(10, 80, 291, 191)
         self.List_widget.addItems(data)
         #
+
+    def refresh(self):
+        with open('data.txt', 'r', encoding='utf-8') as filee:
+            data = filee.read().split('\n')[:-1]
+            self.List_widget.clear()
+            self.List_widget.addItems(data)
 
     def add_password(self):
 
@@ -207,12 +250,11 @@ class password_manager(QWidget):
             self.List_widget.addItem(list_item)
             ff.write(f'{name} - {password}\n')
 
-
     def delete_password(self):
 
         listik = []
         with open('data.txt', 'r', encoding='utf-8') as fff:
-            data = fff.read().split('\n')
+            data = fff.read().split('\n')[1:]
             for i in data:
                 listik.append(i)
             pos = self.List_widget.currentRow()
@@ -227,7 +269,6 @@ class password_manager(QWidget):
         with open('data.txt', 'w', encoding='utf-8') as new:
             for i in listik[:-1]:
                 new.write(i + '\n')
-
 
     def clear_passwords(self):
 
