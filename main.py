@@ -18,6 +18,7 @@ class Generate_password(QWidget):
         self.password = ''
         self.pswrd = ''
         self.tt = ''
+        self.flag = 0
         self.last = 0
         #
 
@@ -92,10 +93,13 @@ class Generate_password(QWidget):
 
         with open('data.txt', 'r', encoding='utf-8') as file:
             data = file.read()
-            if len(data) <= 1:
+            if len(data) <= 4:
                 self.last = 1
+                with open('data.txt', 'w', encoding='utf-8') as dt:
+                    dt.write('')
             else:
                 self.last = len(data.split('\n'))
+
 
         count = 1
         pool = []
