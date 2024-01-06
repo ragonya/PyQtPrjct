@@ -3,6 +3,10 @@ import sys
 import random
 
 
+with open('data.txt', 'a', encoding='utf-8') as file:
+    file.close()
+
+
 class Generate_password(QWidget):
     def __init__(self):
         super().__init__()
