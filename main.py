@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 import sys
+import pyperclip
 import random
 
 
@@ -183,7 +184,6 @@ class Generate_password(QWidget):
 
 
 class password_manager(QWidget):
-
     def __init__(self):
 
         with open('data.txt', 'r') as file:
@@ -197,11 +197,19 @@ class password_manager(QWidget):
         self.setWindowTitle('Password manager')
 
         self.LineEdit = QLineEdit(self)
-        self.LineEdit.setGeometry(130, 10, 261, 22)
+        self.LineEdit.setGeometry(100, 10, 141, 22)
         #
 
         self.LineEdit_2 = QLineEdit(self)
-        self.LineEdit_2.setGeometry(130, 40, 261, 22)
+        self.LineEdit_2.setGeometry(100, 40, 141, 22)
+        #
+
+        self.LineEdit_3 = QLineEdit(self)
+        self.LineEdit_3.setGeometry(250, 10, 141, 22)
+        #
+
+        self.LineEdit_4 = QLineEdit(self)
+        self.LineEdit_4.setGeometry(250, 40, 141, 22)
         #
 
         self.label = QLabel(self)
@@ -215,32 +223,53 @@ class password_manager(QWidget):
         #
 
         self.add_button = QPushButton(self)
-        self.add_button.setGeometry(310, 80, 81, 41)
+        self.add_button.setGeometry(310, 80, 81, 31)
         self.add_button.setText('Add')
         self.add_button.clicked.connect(self.add_password)
         #
 
         self.del_button = QPushButton(self)
-        self.del_button.setGeometry(310, 130, 81, 41)
+        self.del_button.setGeometry(310, 120, 81, 31)
         self.del_button.setText('Delete')
         self.del_button.clicked.connect(self.delete_password)
         #
 
         self.clear_button = QPushButton(self)
-        self.clear_button.setGeometry(310, 180, 81, 41)
+        self.clear_button.setGeometry(310, 160, 81, 31)
         self.clear_button.setText('Clear')
         self.clear_button.clicked.connect(self.clear_passwords)
         #
 
         self.refresh_button = QPushButton(self)
-        self.refresh_button.setGeometry(310, 230, 81, 41)
+        self.refresh_button.setGeometry(310, 200, 81, 31)
         self.refresh_button.setText('Refresh')
         self.refresh_button.clicked.connect(self.refresh)
+        #
+
+        self.ClipBoard_button = QPushButton(self)
+        self.ClipBoard_button.setGeometry(310, 240, 81, 31)
+        self.ClipBoard_button.setText('Copy')
+        self.ClipBoard_button.clicked.connect(self.copy)
+        #
 
         self.List_widget = QListWidget(self)
         self.List_widget.setGeometry(10, 80, 291, 191)
         self.List_widget.addItems(data)
         #
+
+    def copy(self):
+        listik = []
+
+        with open('data.txt', 'r', encoding='utf-8') as ffffffffffff:
+            data = ffffffffffff.read().split('\n')
+            for i in data:
+                listik.append(i)
+        pos = self.List_widget.currentRow()
+        pyperclip.copy(listik[pos])
+        cur_log_pas = listik[pos].split(' - ')
+        self.LineEdit_3.setText(cur_log_pas[0])
+        self.LineEdit_4.setText(cur_log_pas[1])
+
 
     def refresh(self):
         with open('data.txt', 'r', encoding='utf-8') as filee:
