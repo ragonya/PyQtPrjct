@@ -1,3 +1,4 @@
 PtQt5
 sys
 random
+pyperclip
